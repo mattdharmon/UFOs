@@ -20,26 +20,80 @@ function buildTable(data) {
         let row = tbody.append("tr");
 
         // Add data cells to the row.
-        Object.values(dataRow).forEach((val) => {
-            let cell = row.append("td");
-            cell.text(val);
-        });
+        Object.values(dataRow)
+            .forEach((val) => {
+                let cell = row.append("td");
+                cell.text(val);
+            });
     });
 }
 
-function handleClick() {
+// store the form filters here.
+let form = [];
+
+function updateFilters() {
+
     let date = d3.select("#datetime")
         .property("value");
+    let city = d3.select("#city")
+        .property("value");
+    let state = d3.select("#state")
+        .property("value");
+    let country = d3.select("#country")
+        .property("value");
+    let shape = d3.select("#shape")
+        .property("value");
 
-    let filteredData = tableData;
+    // Clear the form filter
+    form = [];
 
+    // Add the filters that have values to the form filter.
     if (date) {
-        filteredData = filteredData.filter(row => row.datetime === date);
+        form.push({ id: "datetime", value: date });
     }
 
+    if (city) {
+        form.push({ id: "city", value: city });
+    }
+
+    if (state) {
+        form.push({ id: "state", value: state });
+    }
+
+    if (country) {
+        form.push({ id: "country", value: country });
+    }
+
+    if (shape) {
+        form.push({ id: "shape", value: shape });
+    }
+
+    // Filter the table
+    filterTable();
+
+}
+
+function filterTable() {
+
+    // Copy the table data to keep original data intact.
+    let filteredData = tableData;
+
+    // Loop through all of the filters and keep any data that
+    // matches the filter values
+    form.forEach((_) => {
+        filteredData = filteredData.filter(row => row[_.id] === _.value);
+    });
+
+
+    // Build out the table to filtered data.
     buildTable(filteredData);
 }
 
-d3.selectAll("#filter-btn").on("click", handleClick);
+// Attach an event to listen for changes to each filter
+d3.selectAll("#datetime").on("change", updateFilters);
+d3.selectAll("#city").on("change", updateFilters);
+d3.selectAll("#state").on("change", updateFilters);
+d3.selectAll("#country").on("change", updateFilters);
+d3.selectAll("#shape").on("change", updateFilters);
 
 buildTable(tableData);
