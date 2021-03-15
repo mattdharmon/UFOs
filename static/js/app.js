@@ -22,8 +22,8 @@ function buildTable(data) {
         // Add data cells to the row.
         Object.values(dataRow)
             .forEach((val) => {
-                let cell = row.append("td");
-                cell.text(val);
+                row.append("td")
+                    .text(val);
             });
     });
 }
@@ -33,42 +33,26 @@ let form = [];
 
 function updateFilters() {
 
-    let date = d3.select("#datetime")
-        .property("value");
-    let city = d3.select("#city")
-        .property("value");
-    let state = d3.select("#state")
-        .property("value");
-    let country = d3.select("#country")
-        .property("value");
-    let shape = d3.select("#shape")
-        .property("value");
+    let filter = d3.select(this);
+    let value = filter.property('value');
+    let id = filter.attr('id');
 
-    // Clear the form filter
-    form = [];
+    let found = form.findIndex(_ => _.id == id);
 
-    // Add the filters that have values to the form filter.
-    if (date) {
-        form.push({ id: "datetime", value: date });
+
+    // set the filter values.
+    if (found > -1) {
+        if (value == "") {
+            form.splice(found, 1);
+        } else {
+            form[i].value = value;
+        }
+    } else {
+        form.push({
+            id: id,
+            value: value, 
+        });
     }
-
-    if (city) {
-        form.push({ id: "city", value: city });
-    }
-
-    if (state) {
-        form.push({ id: "state", value: state });
-    }
-
-    if (country) {
-        form.push({ id: "country", value: country });
-    }
-
-    if (shape) {
-        form.push({ id: "shape", value: shape });
-    }
-
-    // Filter the table
     filterTable();
 
 }
@@ -96,4 +80,5 @@ d3.selectAll("#state").on("change", updateFilters);
 d3.selectAll("#country").on("change", updateFilters);
 d3.selectAll("#shape").on("change", updateFilters);
 
+// Build the initial table
 buildTable(tableData);
